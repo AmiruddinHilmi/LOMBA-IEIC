@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tremor Monitoring Dashboard</title>
+  <style>
+    body {
+      background-color: #0b0f19;
+      color: #ffffff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .dashboard-card {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(173, 216, 230, 0.2);
+      border: 1px solid rgba(173, 216, 230, 0.1);
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+    }
+    h2 {
+      margin-top: 0;
+      color: #e0f7fa;
+      text-shadow: 0 0 10px rgba(173, 216, 230, 0.5);
+    }
+    .data-row {
+      margin: 20px 0;
+      font-size: 1.2rem;
+    }
+    .value {
+      display: block;
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #81d4fa;
+      margin-top: 5px;
+    }
+    .footer {
+      margin-top: 30px;
+      font-size: 0.8rem;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="dashboard-card">
+    <h2>Monitoring Tremor</h2>
+    
+    <div class="data-row">
+      Diagnosis:
+      <span class="value" id="diag">Menunggu Data...</span>
+    </div>
+    
+    <div class="data-row">
+      Frekuensi Puncak:
+      <span class="value"><span id="freq">0</span> Hz</span>
+    </div>
+    
+    <div class="data-row">
+      Tingkat Kepercayaan (Confidence):
+      <span class="value"><span id="conf">0</span> %</span>
+    </div>
+
+    <div class="data-row">
+      Kualitas Sinyal:
+      <span class="value"><span id="qual">0</span> %</span>
+    </div>
+  </div>
+
+  <div class="footer">
+    LOMBA IEIC
+  </div>
+
+  <!-- Firebase SDK (Modular v10) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
+
+    // Konfigurasi Firebase Anda
+    const firebaseConfig = {
+      apiKey: "AIzaSyCojgrEwDjQN9SgnS0brhAvET1xF7acCB8",
+      databaseURL: "https://lomba-ieic-default-rtdb.firebaseio.com"
+    };
+
+    // Inisialisasi Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const tremorRef = ref(db, 'DataTremor');
+
+    // Membaca data secara Real-time
+    onValue(tremorRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        document.getElementById('diag').innerText = data.Diagnosis || "-";
+        document.getElementById('freq').innerText = data.Frequency ? data.Frequency.toFixed(2) : "0";
+        document.getElementById('conf').innerText = data.Confidence || "0";
+        document.getElementById('qual').innerText = data.Quality || "0";
+      }
+    });
+  </script>
+</body>
+</html>
